@@ -16,13 +16,30 @@ from booking.serializers import (
     ReservationSerializer,
     ShowSessionSerializer,
     ShowSessionListSerializer,
-    ShowSessionRetrieveSerializer
+    ShowSessionRetrieveSerializer,
+    AstronomyShowListSerializer,
+    AstronomyShowRetrieveSerializer
 )
 
 
 class AstronomyShowViewSet(viewsets.ModelViewSet):
     queryset = AstronomyShow.objects.all()
     serializer_class = AstronomyShowSerializer
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return AstronomyShowListSerializer
+        elif self.action == "retrieve":
+            return AstronomyShowRetrieveSerializer
+        else:
+            return AstronomyShowSerializer
+
+    def get_queryset(self):
+        queryset = self.queryset
+        if self.action in ["list", "retrieve"]:
+            return queryset.prefetch_related("show_theme")
+        else:
+            return queryset
 
 
 class PlanetariumDomeViewSet(viewsets.ModelViewSet):
