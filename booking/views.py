@@ -14,7 +14,9 @@ from booking.serializers import (
     ShowThemeSerializer,
     TicketSerializer,
     ReservationSerializer,
-    ShowSessionSerializer
+    ShowSessionSerializer,
+    ShowSessionListSerializer,
+    ShowSessionRetrieveSerializer
 )
 
 
@@ -37,10 +39,20 @@ class ShowSessionViewSet(viewsets.ModelViewSet):
     queryset = ShowSession.objects.all()
     serializer_class = ShowSessionSerializer
 
+    def get_serializer_class(self):
+        if self.action == "list":
+            return ShowSessionListSerializer
+        elif self.action == "retrieve":
+            return ShowSessionRetrieveSerializer
+        else:
+            return ShowSessionSerializer
 
-class TicketViewSet(viewsets.ModelViewSet):
-    queryset = Ticket.objects.all()
-    serializer_class = TicketSerializer
+    def get_queryset(self):
+        queryset = self.queryset
+        if self.action == ["list", "retrieve"]:
+            return queryset.select_related()
+        else:
+            return queryset
 
 
 class ReservationViewSet(viewsets.ModelViewSet):
