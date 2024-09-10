@@ -1,5 +1,6 @@
 from django.db.models import ExpressionWrapper, F, IntegerField, Count
 from rest_framework import viewsets
+from rest_framework.pagination import PageNumberPagination
 
 from booking.models import (
     AstronomyShow,
@@ -95,12 +96,18 @@ class ShowSessionViewSet(viewsets.ModelViewSet):
         return queryset.distinct()
 
 
+class ReservationPagination(PageNumberPagination):
+    page_size = 5
+    max_page_size = 15
+
+
 class ReservationViewSet(viewsets.ModelViewSet):
     queryset = Reservation.objects.prefetch_related(
         "tickets__show_session__astronomy_show",
         "tickets__show_session__astronomy_show__planetarium_dome"
     )
     serializer_class = ReservationSerializer
+    pagination_class = ReservationPagination
 
     def get_queryset(self):
         return self.queryset.filter(user=self.request.user)
