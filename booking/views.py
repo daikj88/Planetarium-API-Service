@@ -1,3 +1,4 @@
+from django.db.models import ExpressionWrapper, F, IntegerField, Count
 from rest_framework import viewsets
 
 from booking.models import (
@@ -71,10 +72,26 @@ class ShowSessionViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = self.queryset
-        if self.action == ["list", "retrieve"]:
-            return queryset.select_related()
-        else:
-            return queryset
+
+        queryset = queryset.select_related("planetarium_dome", "astronomy_show")
+
+        if self.action == "list":
+            queryset = queryset.annotate(
+                dome_capacity=ExpressionWrapper(
+                    F("planetarium_dome__rows") * F("planetarium_dome__seats_in_row"),
+                    output_field=IntegerField()
+                ),
+                tickets_available=ExpressionWrapper(
+                    F("planetarium_dome__rows")
+                    * F("planetarium_dome__seats_in_row")
+                    - Count("tickets"),
+                    output_field=IntegerField()
+                )
+            )
+
+        elif self.action == "retrieve":
+            queryset = queryset.prefetch_related("tickets")
+        return queryset.distinct()
 
 
 class ReservationViewSet(viewsets.ModelViewSet):
