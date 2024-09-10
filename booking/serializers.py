@@ -85,7 +85,25 @@ class ShowSessionListSerializer(ShowSessionSerializer):
 
 
 class ShowSessionRetrieveSerializer(ShowSessionSerializer):
-    astronomy_show = AstronomyShowSerializer(many=False, read_only=True)
+    astronomy_show = AstronomyShowRetrieveSerializer(many=False, read_only=True)
+    planetarium_dome = PlanetariumDomeSerializer(many=False, read_only=True)
+    taken_seats = serializers.SlugRelatedField(
+        source="tickets",
+        many=True,
+        read_only=True,
+        slug_field="seat",
+    )
+
+    class Meta:
+        model = ShowSession
+        fields = (
+            "id",
+            "astronomy_show",
+            "astronomy_show",
+            "planetarium_dome",
+            "show_time",
+            "taken_seats"
+        )
 
 
 class ReservationSerializer(serializers.ModelSerializer):
