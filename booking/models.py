@@ -34,7 +34,7 @@ class AstronomyShow(models.Model):
         related_name="show_theme",
         blank=True
     )
-    images = models.ImageField(null=True, upload_to=astronomy_show_image_file_path())
+    images = models.ImageField(null=True, upload_to=astronomy_show_image_file_path)
 
     def __str__(self):
         return self.title
