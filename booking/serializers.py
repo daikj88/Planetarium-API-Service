@@ -11,19 +11,6 @@ from booking.models import (
 )
 
 
-class TicketSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Ticket
-        fields = ("id", "row", "seat", "show_session", "reservation")
-
-    def validate(self, attrs):
-        Ticket.validate_seat(
-            attrs["seat"],
-            attrs["show_session"].planetarium_dome.seats_in_row,
-            serializers.ValidationError,
-        )
-
-
 class ShowThemeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ShowTheme
@@ -106,6 +93,23 @@ class ShowSessionRetrieveSerializer(ShowSessionSerializer):
             "show_time",
             "taken_seats"
         )
+
+
+class TicketSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ticket
+        fields = ("id", "row", "seat", "show_session", "reservation")
+
+    def validate(self, attrs):
+        Ticket.validate_seat(
+            attrs["seat"],
+            attrs["show_session"].planetarium_dome.seats_in_row,
+            serializers.ValidationError,
+        )
+
+
+class TicketListSerializer(TicketSerializer):
+    show_session = ShowSessionListSerializer(many=False, read_only=True)
 
 
 class ReservationSerializer(serializers.ModelSerializer):
