@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "booking",
     "user",
+    "rest_framework.authtoken",
 ]
 
 AUTH_USER_MODEL = "user.User"
