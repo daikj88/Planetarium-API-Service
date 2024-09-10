@@ -1,5 +1,9 @@
+import os
+import uuid
+
 from django.conf import settings
 from django.db import models
+from django.utils.text import slugify
 
 
 class PlanetariumDome(models.Model):
@@ -15,6 +19,13 @@ class PlanetariumDome(models.Model):
         return f"{self.name}, row: {self.rows}, seats: {self.seats_in_row}"
 
 
+def astronomy_show_image_file_path(instance, filename):
+    _, extension = os.path.splitext(filename)
+    filename = f"{slugify(instance.title)}-{uuid.uuid4()}{extension}"
+
+    return os.path.join("uploads/astronomy_show/", filename)
+
+
 class AstronomyShow(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()
@@ -23,6 +34,7 @@ class AstronomyShow(models.Model):
         related_name="show_theme",
         blank=True
     )
+    images = models.ImageField(null=True, upload_to=astronomy_show_image_file_path())
 
     def __str__(self):
         return self.title
@@ -86,11 +98,11 @@ class Ticket(models.Model):
         Ticket.validate_seat(self.seat, Ticket.show_session.planetarium_dome.capacity, ValueError)
 
     def save(
-            self,
-            force_insert=False,
-            force_update=False,
-            using=None,
-            update_fields=None
+        self,
+        force_insert=False,
+        force_update=False,
+        using=None,
+        update_fields=None
     ):
         self.full_clean()
         return super(Ticket, self).save(
