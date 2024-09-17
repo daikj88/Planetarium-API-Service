@@ -1,0 +1,7 @@
+.venv
+Dockerfile
+awdawd.json
+package.json
+README.md
+.gitignore
+.env.template
