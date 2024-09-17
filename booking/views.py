@@ -1,4 +1,6 @@
 from django.db.models import ExpressionWrapper, F, IntegerField, Count
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
@@ -51,6 +53,24 @@ class AstronomyShowViewSet(viewsets.ModelViewSet):
             return queryset.prefetch_related("show_theme")
         else:
             return queryset.distinct()
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                "show_theme",
+                type={"type": "list", "items": {"type": "number"}},
+                description="Filter by show theme id (ex. ?show_themes=2,5)",
+            ),
+            OpenApiParameter(
+                "title",
+                type=OpenApiTypes.STR,
+                description="Filter by astronomy show title "
+                            "(ex. ?title=fiction)",
+            ),
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
 
 class PlanetariumDomeViewSet(viewsets.ModelViewSet):
