@@ -1,4 +1,5 @@
 # Planetarium-API-Service
+DRF project for managing planetarium
 
 ## DB Structure
 
