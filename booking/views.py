@@ -10,7 +10,6 @@ from booking.models import (
     PlanetariumDome,
     ShowTheme,
     ShowSession,
-    Ticket,
     Reservation
 )
 from booking.permissions import IsAdminOrIfAuthenticatedReadOnly
@@ -18,7 +17,6 @@ from booking.serializers import (
     AstronomyShowSerializer,
     PlanetariumDomeSerializer,
     ShowThemeSerializer,
-    TicketSerializer,
     ReservationSerializer,
     ShowSessionSerializer,
     ShowSessionListSerializer,
